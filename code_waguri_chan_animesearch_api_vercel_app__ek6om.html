@@ -1,0 +1,187 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sajib API - Neon Pink Search Engine</title>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            body {
+                background: #0f0007;
+                background-image: radial-gradient(circle at 50% 50%, #2b0014 0%, #0f0007 100%);
+                color: #f1f5f9;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                margin: 0;
+                padding: 40px 20px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .search-container {
+                max-width: 600px;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 50px;
+            }
+            h1 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                background: linear-gradient(45deg, #ff007f, #ff758f);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 10px;
+                text-shadow: 0 0 20px rgba(255, 0, 127, 0.3);
+            }
+            p {
+                color: #ffb3d9;
+                margin-bottom: 30px;
+                opacity: 0.8;
+            }
+            .search-box {
+                position: relative;
+                display: flex;
+                gap: 10px;
+            }
+            input {
+                flex: 1;
+                background: rgba(25, 0, 12, 0.8);
+                border: 1px solid rgba(255, 0, 127, 0.2);
+                padding: 16px 20px;
+                border-radius: 16px;
+                color: white;
+                font-size: 1rem;
+                outline: none;
+                transition: all 0.3s;
+            }
+            input:focus {
+                border-color: #ff007f;
+                box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+            }
+            button {
+                background: #ff007f;
+                color: white;
+                border: none;
+                padding: 0 24px;
+                border-radius: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+            }
+            button:hover {
+                background: #ff477e;
+                transform: translateY(-2px);
+                box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+            }
+            .video-grid {
+                max-width: 1200px;
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+            }
+            .video-card {
+                background: rgba(20, 0, 10, 0.7);
+                border: 1px solid rgba(255, 0, 127, 0.1);
+                border-radius: 20px;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                transition: all 0.3s;
+            }
+            .video-card:hover {
+                transform: translateY(-5px);
+                border-color: rgba(255, 0, 127, 0.5);
+                box-shadow: 0 0 20px rgba(255, 0, 127, 0.2);
+            }
+            video {
+                width: 100%;
+                height: 380px;
+                object-fit: cover;
+                border-radius: 14px;
+                background: #000;
+            }
+            .video-title {
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: #ffe6f2;
+                line-height: 1.4;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .loader {
+                display: none;
+                font-size: 1.5rem;
+                color: #ff007f;
+                margin-top: 20px;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="search-container">
+            <h1>Anime Video Search Engine</h1>
+            <p>Enter any anime keyword to pull live video compilation edits directly via API.</p>
+            <div class="search-box">
+                <input type="text" id="keywordInput" placeholder="e.g., Solo Leveling, Naruto, Gojo..." onkeypress="handleKeyPress(event)">
+                <button onclick="executeSearch()">Search</button>
+            </div>
+            <div class="loader" id="searchLoader"><i class="fa-solid fa-spinner"></i></div>
+        </div>
+
+        <div class="video-grid" id="resultsGrid"></div>
+
+        <script>
+            function handleKeyPress(e) {
+                if (e.key === 'Enter') executeSearch();
+            }
+
+            async function executeSearch() {
+                const keyword = document.getElementById('keywordInput').value.trim();
+                const grid = document.getElementById('resultsGrid');
+                const loader = document.getElementById('searchLoader');
+                
+                if (!keyword) return alert('Please enter a keyword first!');
+                
+                grid.innerHTML = '';
+                loader.style.display = 'block';
+
+                try {
+                    const response = await fetch(`/sajib-api/anisearch?keyword=${encodeURIComponent(keyword)}&mode=all`);
+                    const data = await response.json();
+                    loader.style.display = 'none';
+
+                    if (data.error || !data.results || data.results.length === 0) {
+                        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff477e;">No video components found for this query.</p>';
+                        return;
+                    }
+
+                    data.results.forEach(video => {
+                        const card = document.createElement('div');
+                        card.className = 'video-card';
+                        card.innerHTML = `
+                            <video src="${video.videoUrl}" poster="${video.cover}" controls playsinline preload="none"></video>
+                            <div class="video-title">${video.title || 'Anime Edit Element'}</div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } catch (err) {
+                    loader.style.display = 'none';
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff477e;">Error fetching database elements.</p>';
+                }
+            }
+        </script>
+    </body>
+    </html>
+  
