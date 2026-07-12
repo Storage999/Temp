@@ -3,11 +3,11 @@
     "telegram_id": "7326996884",
     "language": "bn",
     "total_credits": 40,
-    "total_edits": 1,
+    "total_edits": 2,
     "model_usage": {
-      "gpt2": 1
+      "gpt2": 2
     },
     "created_at": "2026-07-12T12:50:18.651938",
-    "credits_used": 10
+    "credits_used": 30
   }
 }
