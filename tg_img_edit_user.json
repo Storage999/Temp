@@ -24,11 +24,11 @@
   "masad": {
     "telegram_id": "6411952409",
     "language": "bn",
-    "total_edits": 1,
+    "total_edits": 2,
     "model_usage": {
-      "gpt2": 1
+      "gpt2": 2
     },
     "created_at": "2026-07-13T11:01:20.494552",
-    "credits_used": 10
+    "credits_used": 30
   }
 }
