@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa'Jibx7 Command Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #070210;
+            --bg-card: rgba(18, 9, 36, 0.75);
+            --neon-purple: #bd00ff;
+            --neon-blue: #00f0ff;
+            --neon-blue-glow: rgba(0, 240, 255, 0.25);
+            --neon-purple-glow: rgba(189, 0, 255, 0.25);
+            --text-light: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle at 50% 0%, rgba(189, 0, 255, 0.1) 0%, transparent 50%);
+            color: var(--text-light); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh;
+        }
+        header {
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15); background: rgba(7, 2, 16, 0.85);
+            backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; padding: 15px 5%;
+            display: flex; flex-direction: column; gap: 15px; align-items: center;
+        }
+        @media(min-width: 600px) { header { flex-direction: row; justify-content: space-between; } }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue-glow); }
+        .logo span { color: var(--neon-blue); }
+        
+        /* Navigation Tabs System */
+        .nav-tabs { display: flex; gap: 10px; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); }
+        .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 8px 20px; font-family: inherit; font-size: 0.85rem; font-weight: 600; border-radius: 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .tab-btn.active { background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); color: white; box-shadow: 0 0 15px var(--neon-blue-glow); }
+        
+        .page-container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .app-page { display: none; }
+        .app-page.active-page { display: block; }
+        
+        /* Glassmorphism Widget UI */
+        .glass-panel { background: var(--bg-card); border: 1px solid rgba(189, 0, 255, 0.15); border-radius: 20px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .page-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--neon-blue); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        
+        /* Form controls matrix */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-ctrl { width: 100%; padding: 12px 16px; background: #04010a; border: 1px solid rgba(189, 0, 255, 0.2); border-radius: 10px; color: white; font-family: inherit; font-size: 0.9rem; transition: 0.3s; }
+        .input-ctrl:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue-glow); }
+        .danger-input { border-color: rgba(239, 68, 68, 0.4) !important; }
+        .danger-input:focus { box-shadow: 0 0 15px rgba(239, 68, 68, 0.25) !important; border-color: #ef4444 !important; }
+        .action-btn { width: 100%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.3s; letter-spacing: 1px; margin-top: 10px; }
+        .action-btn:hover { transform: translateY(-2px); opacity: 0.95; box-shadow: 0 5px 20px rgba(0, 240, 255, 0.3); }
+        
+        /* Search & Filter Matrix Layout */
+        .vault-controls { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px; }
+        @media(min-width: 700px) { .vault-controls { grid-template-columns: 1fr 250px; } }
+        .filter-select { width: 100%; padding: 12px; background: #04010a; border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; color: white; font-family: inherit; }
+        
+        /* Display feed cards */
+        .cards-feed { display: flex; flex-direction: column; gap: 20px; }
+        .matrix-card { background: var(--bg-card); border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 16px; padding: 20px; transition: 0.3s; }
+        .matrix-card:hover { border-color: var(--neon-blue); box-shadow: 0 10px 25px rgba(0,240,255,0.08); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .card-title { font-size: 1.15rem; font-weight: 700; color: white; font-family: 'Orbitron', sans-serif; }
+        .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; font-size: 0.75rem; color: var(--text-muted); }
+        .meta-tag { background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.2); }
+        .meta-tag.author-tag { background: rgba(189, 0, 255, 0.1); color: var(--neon-purple); border: 1px solid rgba(189,0,255,0.2); }
+        .card-desc { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 15px; line-height: 1.5; }
+        .code-shell { background: #030008; border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); margin-bottom: 15px; overflow-x: auto; max-height: 160px; }
+        .code-shell pre { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #a78bfa; white-space: pre; }
+        .card-footer { display: flex; justify-content: space-between; }
+        .footer-left { display: flex; gap: 10px; }
+        .ctrl-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: white; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .ctrl-btn:hover { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-blue); color: var(--neon-blue); }
+        .trash-btn { background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .trash-btn:hover { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Sa'Jibx7 <span>Command Store</span></div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="vaultTab" onclick="switchView('vault')"><i class="fa-solid fa-vault"></i> View Vault</button>
+            <button class="tab-btn" id="uploadTab" onclick="switchView('upload')"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Asset</button>
+        </div>
+    </header>
+
+    <div class="page-container">
+        
+        <!-- PAGE 1: VIEW/TAKE FILES (VAULT) -->
+        <div id="vaultPage" class="app-page active-page">
+            <div class="vault-controls">
+                <input type="text" id="vaultSearch" class="input-ctrl" placeholder="Search operational matrices..." oninput="displayCommands()">
+                <select id="vaultFilter" class="filter-select" onchange="displayCommands()">
+                    <option value="All">All Categories</option>
+                    <option value="AI">AI Systems</option>
+                    <option value="Media">Media Downloaders</option>
+                    <option value="Utility">Utility Tools</option>
+                    <option value="Admin">Administrative</option>
+                </select>
+            </div>
+            <div class="cards-feed" id="cardsContainer"></div>
+        </div>
+
+        <!-- PAGE 2: SAVE/UPLOAD FILES -->
+        <div id="uploadPage" class="app-page">
+            <div class="glass-panel">
+                <div class="page-title"><i class="fa-solid fa-terminal"></i> Initialize Asset Upload</div>
+                
+                <div class="form-group">
+                    <label>File Name</label>
+                    <input type="text" id="inpFileName" class="input-ctrl" placeholder="e.g. musicPlayer.js">
+                </div>
+                
+                <div class="form-group">
+                    <label>Author Name</label>
+                    <input type="text" id="inpAuthor" class="input-ctrl" placeholder="e.g. Sajibx7">
+                </div>
+                
+                <div class="form-group">
+                    <label>Category Matrix</label>
+                    <select id="inpCategory" class="input-ctrl" style="background:#04010a;">
+                        <option value="AI">AI</option>
+                        <option value="Media">Media</option>
+                        <option value="Utility">Utility</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Bot Environment Type</label>
+                    <input type="text" id="inpBotType" class="input-ctrl" placeholder="e.g. GoatBot v2">
+                </div>
+                
+                <div class="form-group">
+                    <label>System Dependencies</label>
+                    <input type="text" id="inpDeps" class="input-ctrl" placeholder="e.g. axios, fs-extra">
+                </div>
+
+                <div class="form-group">
+                    <label>Brief Description</label>
+                    <input type="text" id="inpDesc" class="input-ctrl" placeholder="Enter purpose of this code module">
+                </div>
+                
+                <div class="form-group">
+                    <label>Source Code Content Logic</label>
+                    <textarea id="inpCode" class="input-ctrl" style="height:150px; resize:none; font-family:monospace;" placeholder="Paste JavaScript implementation execution flow here..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label style="color:#ef4444;">Verification Security Key</label>
+                    <input type="password" id="inpSecurityKey" class="input-ctrl danger-input" placeholder="Authorization security matrix validation key required">
+                </div>
+                
+                <button class="action-btn" onclick="transmitPayload()">Synchronize To System</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let commandCache = [];
+
+        function switchView(target) {
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            if (target === 'vault') {
+                document.getElementById('vaultPage').classList.add('active-page');
+                document.getElementById('vaultTab').classList.add('active');
+                fetchVaultRecords();
+            } else {
+                document.getElementById('uploadPage').classList.add('active-page');
+                document.getElementById('uploadTab').classList.add('active');
+            }
+        }
+
+        async function fetchVaultRecords() {
+            try {
+                const res = await fetch('/api/v1/commands');
+                const data = await res.json();
+                if (data.success) {
+                    commandCache = data.data;
+                    displayCommands();
+                }
+            } catch (err) { console.error("Cache sync failed", err); }
+        }
+
+        async function transmitPayload() {
+            const fileName = document.getElementById('inpFileName').value.trim();
+            const author = document.getElementById('inpAuthor').value.trim();
+            const category = document.getElementById('inpCategory').value;
+            const botType = document.getElementById('inpBotType').value.trim() || "GoatBot";
+            const dependencies = document.getElementById('inpDeps').value.trim() || "None";
+            const description = document.getElementById('inpDesc').value.trim() || "No documentation supplied.";
+            const codeContent = document.getElementById('inpCode').value.trim();
+            const securityKey = document.getElementById('inpSecurityKey').value;
+
+            if (!fileName || !author || !codeContent || !securityKey) {
+                alert("Validation Failure: Required parameter blocks left unfilled."); return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/commands', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ fileName, author, description, category, botType, dependencies, codeContent, securityKey })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert("Transmission Confirmed: System asset updated.");
+                    document.getElementById('inpFileName').value = '';
+                    document.getElementById('inpAuthor').value = '';
+                    document.getElementById('inpBotType').value = '';
+                    document.getElementById('inpDeps').value = '';
+                    document.getElementById('inpDesc').value = '';
+                    document.getElementById('inpCode').value = '';
+                    document.getElementById('inpSecurityKey').value = '';
+                    switchView('vault');
+                } else { alert(data.message || "Operation Terminated by Host."); }
+            } catch (err) { alert("Network Connection Interrupt Blocked Save."); }
+        }
+
+        async function registerVote(id) {
+            try {
+                await fetch(`/api/v1/commands/${id}/upvote`, { method: 'PATCH' });
+                fetchVaultRecords();
+            } catch (err) { console.error(err); }
+        }
+
+        async function duplicateToClipboard(id, code) {
+            navigator.clipboard.writeText(code);
+            alert("Clipboard Sync Success: Source matrix acquired.");
+            try {
+                await fetch(`/api/v1/commands/${id}/copy`, { method: 'PATCH' });
+                fetchVaultRecords();
+            } catch (err) { console.error(err); }
+        }
+
+        async function purgeAsset(id) {
+            const securityKey = prompt("Administrative Verification Required: Input Security Key:");
+            if (!securityKey) return;
+            try {
+                const res = await fetch(`/api/v1/commands/${id}/delete`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ securityKey })
+                });
+                const data = await res.json();
+                if (data.success) { fetchVaultRecords(); } else { alert("Purge Protocol Rejected."); }
+            } catch (err) { console.error(err); }
+        }
+
+        function displayCommands() {
+            const query = document.getElementById('vaultSearch').value.toLowerCase();
+            const filter = document.getElementById('vaultFilter').value;
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            const items = commandCache.filter(c => {
+                const matchesSearch = c.fileName.toLowerCase().includes(query) || c.author.toLowerCase().includes(query) || c.description.toLowerCase().includes(query);
+                const matchesFilter = (filter === "All") || (c.category === filter);
+                return matchesSearch && matchesFilter;
+            });
+
+            if (items.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:30px;">No operational matrices matching criteria found.</div>';
+                return;
+            }
+
+            items.forEach(c => {
+                const element = document.createElement('div');
+                element.className = 'matrix-card';
+                element.innerHTML = `
+                    <div class="card-top">
+                        <div class="card-title">${sanitizeOutput(c.fileName)}</div>
+                        <div class="meta-tag">${sanitizeOutput(c.botType)}</div>
+                    </div>
+                    <div class="meta-row">
+                        <div class="meta-tag author-tag"><i class="fa-solid fa-user-code"></i> Dev: ${sanitizeOutput(c.author)}</div>
+                        <div class="meta-tag"><i class="fa-solid fa-layer-group"></i> ${sanitizeOutput(c.category)}</div>
+                        <div><i class="fa-solid fa-box"></i> Requires: ${sanitizeOutput(c.dependencies)}</div>
+                    </div>
+                    <div class="card-desc">${sanitizeOutput(c.description)}</div>
+                    <div class="code-shell"><pre><code>${sanitizeOutput(c.codeContent)}</code></pre></div>
+                    <div class="card-footer">
+                        <div class="footer-left">
+                            <button class="ctrl-btn" onclick="registerVote('${c._id}')"><i class="fa-solid fa-heart" style="color:var(--neon-purple);"></i> (${c.votes})</button>
+                            <button class="ctrl-btn" onclick="duplicateToClipboard('${c._id}', \`${escapeStringPattern(c.codeContent)}\`)"><i class="fa-solid fa-copy" style="color:var(--neon-blue);"></i> Copy (${c.copies})</button>
+                        </div>
+                        <button class="ctrl-btn trash-btn" onclick="purgeAsset('${c._id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function sanitizeOutput(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+        function escapeStringPattern(s) { return s.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$'); }
+
+        fetchVaultRecords();
+    </script>
+</body>
+</html>
