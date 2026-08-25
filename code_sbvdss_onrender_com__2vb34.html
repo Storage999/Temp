@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BVDSS Interface</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#6a1b9a">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <img src="img/bgr.png" alt="Background" class="bg-img">
+
+        <header class="header-container">
+            <img src="img/top to left.png" alt="Top Left Element" class="extra-element" id="topLeftLogo">
+            <h1 class="header-title">BVDSS</h1>
+            <div class="dip-menu" id="dipMenu">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <button class="menu-item" id="installAppBtn" style="display: none;">Install App</button>
+                    <button class="menu-item" id="mouseBtn">Mouse</button>
+                    <button class="menu-item" id="mouseInfoBtn">Mouse Info</button>
+                    <a href="profile.html" class="menu-item-link" id="profileBtn">Profile</a>
+                </div>
+            </div>
+        </header>
+
+        <img src="img/toplogo.png" alt="Top Logo" class="logo top-logo" id="topLogo">
+        <img src="img/left.png" alt="Left Logo" class="logo left-logo" id="leftLogo">
+        <img src="img/rightlogo.png" alt="Right Logo" class="logo right-logo" id="rightLogo">
+        <img src="img/buttomlogo.png" alt="Bottom Logo" class="logo bottom-logo" id="bottomLogo">
+
+        <div class="center-container" id="centerTrigger">
+            <img src="img/center.png" alt="Center Wheel" class="center-wheel" id="centerWheel">
+        </div>
+
+        <div class="welcome-card" id="welcomeCard">
+            <div class="system-header">
+                <span class="status-indicator"></span> SYSTEM READY // BVDSS v1.0
+            </div>
+            
+            <div class="welcome-text-group">
+                <h2 class="sys-title">WELCOME TO BVDSS SERVER</h2>
+                <div class="sys-divider"></div>
+                <div class="sys-services">
+                    <div class="service-tag">BOT VIDEO DOWNLOAD</div>
+                    <div class="service-tag">SNAP SERVER</div>
+                    <div class="service-tag">GAME ACCESS AI</div>
+                </div>
+            </div>
+
+            <a href="https://bvdss1-0.onrender.com" target="_blank" class="launch-btn">
+                LAUNCH SERVER BOT
+            </a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
